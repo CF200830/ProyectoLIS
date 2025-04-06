@@ -1,0 +1,40 @@
+DATOS INGRESADOS
+ -- Tabla rubro
+INSERT INTO `rubro` (`nombre_rubro`) VALUES 
+('Tecnología'), 
+('Restaurantes');
+
+-- Tabla empresa
+INSERT INTO `empresa` (`nombre_empresa`, `codigo_empresa`, `nombre_contacto`, `direccion`, `telefono`, `correo`, `id_rubro`, `porcentaje_comision`) VALUES 
+('TechNova S.A.', 'TEC001', 'Laura Pérez', 'San Salvador, El Salvador', '2222-3333', 'contacto@technova.com', 1, 10.00),
+('Delicias Express', 'RES002', 'Carlos Gómez', 'Santa Tecla, El Salvador', '2345-6789', 'info@delicias.com', 2, 12.50);
+
+-- Tabla usuario
+INSERT INTO `usuario` (`nombre`, `apellido`, `correo`, `contraseña`, `telefono`, `direccion`, `dui`, `tipo_usuario`, `verificado`, `token_verificacion`) VALUES 
+('María', 'Ramírez', 'maria.ramirez@gmail.com', 'pass1234', '7890-1234', 'Col. Escalón', '01234567-8', 'cliente', 1, NULL),
+('Juan', 'Hernández', 'juan.hdz@hotmail.com', 'segura456', '7564-3210', 'Soyapango', '12345678-9', 'cliente', 0, 'abc123token');
+
+-- Tabla empleado
+INSERT INTO `empleado` (`id_empresa`, `nombre`, `apellido`, `correo`, `contraseña`, `telefono`, `direccion`, `dui`, `tipo_usuario`, `verificado`, `token_verificacion`) VALUES 
+(1, 'Ana', 'Lopez', 'ana.lopez@technova.com', 'clave123', '2211-3344', 'San Salvador', '23456789-0', 'administrador', 1, NULL),
+(2, 'Luis', 'Martínez', 'luis.mtz@delicias.com', 'ventas456', '2233-4455', 'Santa Tecla', '34567890-1', 'vendedor', 0, 'token123xyz');
+
+-- Tabla oferta
+INSERT INTO `oferta` (`id_empresa`, `titulo`, `precio_regular`, `precio_oferta`, `fecha_inicio`, `fecha_fin`, `fecha_limite`, `cantidad_limite`, `descripcion`, `estado`, `justificacion_rechazo`) VALUES 
+(1, 'Combo Gamer', 500.00, 399.99, '2025-04-01', '2025-04-30', '2025-04-25', 100, 'Incluye teclado, mouse y audífonos gamer.', 'activo', NULL),
+(2, 'Menú Ejecutivo 2x1', 12.00, 6.00, '2025-04-01', '2025-04-15', '2025-04-10', 50, 'Promoción en almuerzos ejecutivos.', 'activo', NULL);
+
+-- Tabla cupon
+INSERT INTO `cupon` (`codigo_cupon`, `id_oferta`, `id_cliente`, `fecha_compra`, `estado`) VALUES 
+('CUPON001', 1, 1, NOW(), 'activo'),
+('CUPON002', 2, 2, NOW(), 'utilizado');
+
+-- Tabla compra
+INSERT INTO `compra` (`id_cliente`, `fecha_compra`, `total`) VALUES 
+(1, NOW(), 399.99),
+(2, NOW(), 12.00);
+
+-- Tabla detalle_compra
+INSERT INTO `detalle_compra` (`id_compra`, `id_cupon`, `cantidad`, `precio_unitario`) VALUES 
+(1, 1, 1, 399.99),
+(2, 2, 1, 12.00);

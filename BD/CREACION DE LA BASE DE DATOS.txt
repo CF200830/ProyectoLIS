@@ -1,0 +1,104 @@
+-- Crear la base de datos
+CREATE DATABASE IF NOT EXISTS `cuponera`;
+USE `cuponera`;
+
+-- Crear tabla rubro
+CREATE TABLE IF NOT EXISTS `rubro` (
+    `id_rubro` INT AUTO_INCREMENT PRIMARY KEY,
+    `nombre_rubro` VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- Crear tabla empresa
+CREATE TABLE IF NOT EXISTS `empresa` (
+    `id_empresa` INT AUTO_INCREMENT PRIMARY KEY,
+    `nombre_empresa` VARCHAR(100) NOT NULL,
+    `codigo_empresa` CHAR(6) NOT NULL UNIQUE,
+    `nombre_contacto` VARCHAR(100) NOT NULL,
+    `direccion` TEXT NOT NULL,
+    `telefono` VARCHAR(20) NOT NULL,
+    `correo` VARCHAR(100) NOT NULL,
+    `id_rubro` INT NOT NULL,
+    `porcentaje_comision` DECIMAL(5, 2) NOT NULL,
+    FOREIGN KEY (`id_rubro`) REFERENCES `rubro`(`id_rubro`)
+);
+
+-- Crear tabla usuario
+CREATE TABLE IF NOT EXISTS `usuario` (
+    `id_usuario` INT AUTO_INCREMENT PRIMARY KEY,
+    `nombre` VARCHAR(100) NOT NULL,
+    `apellido` VARCHAR(100) NOT NULL,
+    `correo` VARCHAR(100) NOT NULL UNIQUE,
+    `contraseña` VARCHAR(255) NOT NULL,
+    `telefono` VARCHAR(20) NOT NULL,
+    `direccion` TEXT NOT NULL,
+    `dui` VARCHAR(10) NOT NULL UNIQUE,
+    `tipo_usuario` ENUM('cliente', 'proveedor') NOT NULL,
+    `verificado` TINYINT(1) DEFAULT 0,
+    `token_verificacion` VARCHAR(255)
+);
+
+-- Crear tabla empleado
+CREATE TABLE IF NOT EXISTS `empleado` (
+    `id_empleado` INT AUTO_INCREMENT PRIMARY KEY,
+    `id_empresa` INT NOT NULL,
+    `nombre` VARCHAR(100) NOT NULL,
+    `apellido` VARCHAR(100) NOT NULL,
+    `correo` VARCHAR(100) NOT NULL UNIQUE,
+    `contraseña` VARCHAR(255) NOT NULL,
+    `telefono` VARCHAR(20) NOT NULL,
+    `direccion` TEXT NOT NULL,
+    `dui` VARCHAR(10) NOT NULL UNIQUE,
+    `tipo_usuario` ENUM('administrador', 'vendedor') NOT NULL,
+    `verificado` TINYINT(1) DEFAULT 0,
+    `token_verificacion` VARCHAR(255),
+    FOREIGN KEY (`id_empresa`) REFERENCES `empresa`(`id_empresa`)
+);
+
+-- Crear tabla oferta
+CREATE TABLE IF NOT EXISTS `oferta` (
+    `id_oferta` INT AUTO_INCREMENT PRIMARY KEY,
+    `id_empresa` INT NOT NULL,
+    `titulo` VARCHAR(100) NOT NULL,
+    `precio_regular` DECIMAL(10, 2) NOT NULL,
+    `precio_oferta` DECIMAL(10, 2) NOT NULL,
+    `fecha_inicio` DATE NOT NULL,
+    `fecha_fin` DATE NOT NULL,
+    `fecha_limite` DATE NOT NULL,
+    `cantidad_limite` INT NOT NULL,
+    `descripcion` TEXT NOT NULL,
+    `estado` ENUM('activo', 'inactivo', 'rechazado') NOT NULL,
+    `justificacion_rechazo` TEXT,
+    FOREIGN KEY (`id_empresa`) REFERENCES `empresa`(`id_empresa`)
+);
+
+-- Crear tabla cupon
+CREATE TABLE IF NOT EXISTS `cupon` (
+    `id_cupon` INT AUTO_INCREMENT PRIMARY KEY,
+    `codigo_cupon` VARCHAR(20) NOT NULL UNIQUE,
+    `id_oferta` INT NOT NULL,
+    `id_cliente` INT NOT NULL,
+    `fecha_compra` DATETIME NOT NULL,
+    `estado` ENUM('activo', 'utilizado', 'caducado') NOT NULL,
+    FOREIGN KEY (`id_oferta`) REFERENCES `oferta`(`id_oferta`),
+    FOREIGN KEY (`id_cliente`) REFERENCES `usuario`(`id_usuario`)
+);
+
+-- Crear tabla compra
+CREATE TABLE IF NOT EXISTS `compra` (
+    `id_compra` INT AUTO_INCREMENT PRIMARY KEY,
+    `id_cliente` INT NOT NULL,
+    `fecha_compra` DATETIME NOT NULL,
+    `total` DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (`id_cliente`) REFERENCES `usuario`(`id_usuario`)
+);
+
+-- Crear tabla detalle_compra
+CREATE TABLE IF NOT EXISTS `detalle_compra` (
+    `id_detalle_compra` INT AUTO_INCREMENT PRIMARY KEY,
+    `id_compra` INT NOT NULL,
+    `id_cupon` INT,
+    `cantidad` INT NOT NULL,
+    `precio_unitario` DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (`id_compra`) REFERENCES `compra`(`id_compra`),
+    FOREIGN KEY (`id_cupon`) REFERENCES `cupon`(`id_cupon`)
+);
