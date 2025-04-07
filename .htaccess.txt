@@ -1,0 +1,22 @@
+# Activar RewriteEngine para redirecciones y URLs amigables
+RewriteEngine On
+
+# Redirigir de HTTP a HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Bloquear acceso a archivos sensibles
+<FilesMatch "\.(env|log|sql|htaccess)$">
+    Deny from all
+</FilesMatch>
+
+# Prevenir listado de directorios
+Options -Indexes
+
+# Redirigir errores 404 a una página personalizada
+ErrorDocument 404 /404.html
+
+# URLs amigables (si usas PHP como index)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?url=$1 [L,QSA]
